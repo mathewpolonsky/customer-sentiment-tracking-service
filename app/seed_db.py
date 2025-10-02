@@ -1,12 +1,37 @@
 import os
+import time
+
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
 import pandas as pd
 import numpy as np
 import gdown
 
-from .database import engine, Base
-from .models import Review, Topic, ReviewTopicLink
+from database import engine, Base
+from models import Review, Topic, ReviewTopicLink
+
+
+# --- Логика ожидания базы ---
+# Иногда healthcheck проходит, а база все еще не готова на 100%.
+def wait_for_db():
+    max_retries = 10
+    retry_delay = 10
+    for i in range(max_retries):
+        try:
+            # Пытаемся создать соединение
+            connection = engine.connect()
+            connection.close()
+            print("База данных готова!")
+            return True
+        except Exception as e:
+            print(f"База данных не готова (попытка {i+1}/{max_retries}): {e}")
+            time.sleep(retry_delay)
+    print("Не удалось подключиться к базе данных после нескольких попыток.")
+    return False
+
+# Вызываем функцию ожидания перед тем, как что-либо делать
+if not wait_for_db():
+    exit(1) # Выходим с ошибкой, если не смогли подключиться
 
 
 # --- CSV-файлы с требуемой структурой ---
@@ -33,6 +58,7 @@ print(f"Скачан {TOPICS_CSV}")
 gdown.download(id=REVIEWS_TOPICS_GDRIVE_ID, output=REVIEWS_TOPICS_CSV, quiet=False)
 print(f"Скачан {REVIEWS_TOPICS_CSV}")
 print("Все файлы скачаны успешно.")
+
 
 Session = sessionmaker(bind=engine)
 session = Session()
