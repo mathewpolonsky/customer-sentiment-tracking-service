@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 
 from sqlalchemy.orm import sessionmaker
@@ -7,8 +8,10 @@ import pandas as pd
 import numpy as np
 import gdown
 
-import database
-import models
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from database import engine, Base
+from models import Review, Topic, ReviewTopicLink
 
 
 # --- Логика ожидания базы ---
@@ -19,7 +22,7 @@ def wait_for_db():
     for i in range(max_retries):
         try:
             # Пытаемся создать соединение
-            connection = database.engine.connect()
+            connection = engine.connect()
             connection.close()
             print("База данных готова!")
             return True
@@ -60,7 +63,7 @@ print(f"Скачан {REVIEWS_TOPICS_CSV}")
 print("Все файлы скачаны успешно.")
 
 
-Session = sessionmaker(bind=database.engine)
+Session = sessionmaker(bind=engine)
 session = Session()
 
 try:
@@ -72,7 +75,7 @@ try:
     print("Старые таблицы удалены.")
 
     print("Создаем новые таблицы...")
-    database.Base.metadata.create_all(bind=database.engine)
+    Base.metadata.create_all(bind=engine)
     print("Новые таблицы созданы.")
 
     df_reviews = pd.read_csv(REVIEWS_CSV)
@@ -83,7 +86,7 @@ try:
 
     # topics
     print("Заполняем 'topics' таблицу...")
-    session.bulk_insert_mappings(models.Topic, df_topics.to_dict(orient='records'))
+    session.bulk_insert_mappings(Topic, df_topics.to_dict(orient='records'))
     print(f"Заполнено {len(df_topics)} topics.")
 
     # reviews
@@ -98,7 +101,7 @@ try:
     df_reviews_to_seed['date'] = pd.to_datetime(df_reviews_to_seed['date'], format='%Y-%m-%d')
     print(df_reviews_to_seed)
     
-    session.bulk_insert_mappings(models.Review, df_reviews_to_seed.to_dict(orient='records'))
+    session.bulk_insert_mappings(Review, df_reviews_to_seed.to_dict(orient='records'))
     print(f"Заполнено {len(df_reviews)} reviews.")
 
     # reviews_topics
@@ -107,7 +110,7 @@ try:
         'reviewId': 'review_id',
         'topicId': 'topic_id'
     })
-    session.bulk_insert_mappings(models.ReviewTopicLink, df_reviews_topics_to_seed.to_dict(orient='records'))
+    session.bulk_insert_mappings(ReviewTopicLink, df_reviews_topics_to_seed.to_dict(orient='records'))
     print(f"Заполнено {len(df_reviews_topics)} review-topic links.")
     
     session.commit()
