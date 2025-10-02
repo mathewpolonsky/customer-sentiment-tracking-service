@@ -10,8 +10,8 @@ import gdown
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from database import engine, Base
-from models import Review, Topic, ReviewTopicLink
+from .database import engine, Base
+from .models import Review, Topic, ReviewTopicLink
 
 
 # --- Логика ожидания базы ---
