@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+.env
+venv/
+env/
+
+# Node.js
+node_modules/
+dist/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker
+.docker/
+
+# Редакторы и ОС
+.vscode/
+.idea/
+*.DS_Store
+.DS_Store?
+
+# Данные
+app/data/
+
+# Локальные данные PostgreSQL из docker-compose
+postgres_data/
+
+# Логи
+*.log

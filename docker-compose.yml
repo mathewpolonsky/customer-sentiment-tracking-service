@@ -1,0 +1,95 @@
+services:
+  # Сервис бэкенда
+  app:
+    build: ./app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app # Синхронизируем папку backend с папкой /app внутри контейнера
+    working_dir: /
+
+    environment: # Переменные окружения для подключения к БД и модели
+      - DATABASE_URL=postgresql://postgres:postgres@db/maindb
+      - VLLM_URL=http://vllm:8000/v1/chat/completions
+
+    # Указываем, что бэкенд должен стартовать после БД и модели
+    depends_on:
+      db-seeder:
+        condition: service_completed_successfully
+      vllm:
+        condition: service_healthy
+
+  # Сервис фронтенда
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Исключает перезапись node_modules локальными файлами
+    depends_on:
+      - app
+
+  db:
+    image: postgres:17-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/ # Сохраняем данные даже после остановки контейнера
+      - ./db_init:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=maindb
+    ports:
+      - "5432:5432"
+      
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      
+  # Сервис, который заполняет базу данных
+  db-seeder:
+    build: ./app
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db/maindb
+    command: python -m seed_db
+  
+  vllm:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    image: vllm/vllm-openai:latest
+    ports:
+      - "8100:8000"
+    # Пробрасываем кэш Hugging Face, чтобы не скачивать модель каждый раз
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    # Аналог --ipc=host
+    ipc: host
+
+    # Аргументы, которые передаются в контейнер при запуске
+    command: >
+      --host 0.0.0.0
+      --model JosephThePatrician/gemma3-270m-it-reviews-v3
+      --max-model-len 4096
+      --gpu-memory-utilization 0.5
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/v1/models || exit 1"]
+      interval: 120s
+      timeout: 10s
+      retries: 10
+      start_period: 120s # Даем 2 минуты на скачивание/загрузку модели перед началом проверок
+
+
+# Том для хранения данных БД
+volumes:
+  postgres_data:

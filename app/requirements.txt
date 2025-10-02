@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+plotly
+sqlalchemy
+psycopg2-binary
+pandas
+python-dateutil
+aiohttp
+gdown
