@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Float
 from sqlalchemy.orm import relationship
-from .database import Base
+import database
 
-class Review(Base):
+class Review(database.Base):
     __tablename__ = "reviews"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -16,7 +16,7 @@ class Review(Base):
     
     topics = relationship("ReviewTopicLink", back_populates="review")
 
-class Topic(Base):
+class Topic(database.Base):
     __tablename__ = "topics"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -25,7 +25,7 @@ class Topic(Base):
 
     reviews = relationship("ReviewTopicLink", back_populates="topic")
 
-class ReviewTopicLink(Base):
+class ReviewTopicLink(database.Base):
     __tablename__ = "reviews_topics"
 
     id = Column(Integer, primary_key=True, index=True)
