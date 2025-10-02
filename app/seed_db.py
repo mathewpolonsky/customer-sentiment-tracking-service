@@ -39,8 +39,8 @@ if not wait_for_db():
 
 # --- CSV-файлы с требуемой структурой ---
 REVIEWS_GDRIVE_ID =        '1-m3vO4MJtfT3tfeRwN3pTr5b7H-4bJe4'
-TOPICS_GDRIVE_ID =         '1PWHPBaLbtN0TCFtyIk5oP851ULLLZ-XM'
-REVIEWS_TOPICS_GDRIVE_ID = '10NAfgErhwtU-R6--lC26VjQX1XXQkKMB'
+TOPICS_GDRIVE_ID =         '1kl8lEPOgwrfxWkOB6gF6z-e9yBPodh2s'
+REVIEWS_TOPICS_GDRIVE_ID = '1jf3-Zgdtumo0UhxAuE2AmpRfYlxIrgFw'
 
 # Локальные пути, куда будут сохраняться файлы внутри контейнера
 DATA_DIR = './data'

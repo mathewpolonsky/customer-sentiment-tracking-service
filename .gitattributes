@@ -1,9 +1,57 @@
-* text=auto
+# =========================================================================
+# Глобальные настройки
+# =========================================================================
 
-*.sh      eol=lf
-*.py      eol=lf
-Dockerfile  eol=lf
-docker-compose.yml eol=lf
-requirements.txt eol=lf
-.gitignore eol=lf
-.browserslistrc eol=lf
+# Установить поведение по умолчанию для всех файлов.
+# Git будет сам пытаться определить, текстовый файл или бинарный,
+# и автоматически нормализовать окончания строк в репозитории к LF.
+* text=auto eol=lf
+
+# =========================================================================
+# Исключения для бинарных файлов
+# =========================================================================
+
+# Явно указать, что эти файлы являются бинарными и их нельзя изменять.
+# Git не будет трогать их окончания строк или пытаться смержить их.
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.svg     binary
+*.ico     binary
+*.woff    binary
+*.woff2   binary
+*.ttf     binary
+*.eot     binary
+*.zip     binary
+*.gz      binary
+*.lockb   binary
+
+# =========================================================================
+# Явные правила для текстовых файлов (не обязательно, но хорошая практика)
+# =========================================================================
+
+# Эти файлы гарантированно будут иметь окончания LF, что критично для Docker.
+*.sh            text eol=lf
+*.py            text eol=lf
+Dockerfile*     text eol=lf
+docker-compose* text eol=lf
+
+# Файлы фронтенда тоже приводим к единому стандарту LF.
+*.js            text eol=lf
+*.ts            text eol=lf
+*.vue           text eol=lf
+*.html          text eol=lf
+*.css           text eol=lf
+*.scss          text eol=lf
+*.json          text eol=lf
+*.md            text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+*.mjs           text eol=lf
+
+# Конфигурационные файлы
+.gitignore      text eol=lf
+.gitattributes  text eol=lf
+.editorconfig   text eol=lf
+.browserslistrc text eol=lf

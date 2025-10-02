@@ -17,11 +17,12 @@ import plotly.graph_objects as go
 from . import models
 from . import database
 from . import system_prompt
+from . import postprocessing
 
 
 # --- КОНФИГУРАЦИЯ vLLM ---
 VLLM_URL = os.getenv("VLLM_URL", "http://localhost:8100/v1/chat/completions")
-MODEL_NAME = "JosephThePatrician/gemma3-270m-it-reviews-v3"
+MODEL_NAME = "JosephThePatrician/qwen3_0.6b-reviews-fine-tune-v3"
 turn_qwen_thinking_off = ("qwen3" in MODEL_NAME)
 MAX_CONNECTIONS = 100 # Ограничиваем количество одновременных запросов к vLLM
 MAX_RETRIES = 3       # Количество повторных попыток для каждого отзыва
@@ -100,7 +101,7 @@ async def process_single_review(
                     "temperature": 0.5,
                     "max_tokens": 250,
                 }
-                print("payload", payload)
+                # print("payload", payload)
                 async with session.post(VLLM_URL, json=payload, timeout=180) as response: # Добавляем таймаут
                     if response.status == 200:
                         response_data = await response.json()
@@ -108,6 +109,7 @@ async def process_single_review(
                         content = response_data.get('choices', [{}])[0].get('message', {}).get('content', '')
                         # print("content", content)
                         try:
+
                             parsed_response = json.loads(content.replace("'", "\"")) # Обучали на одинарных кавычках
                             # print("parsed_response", parsed_response)
                             if not validate_response_structure(parsed_response):

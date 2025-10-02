@@ -80,7 +80,7 @@ services:
     # Аргументы, которые передаются в контейнер при запуске
     command: >
       --host 0.0.0.0
-      --model JosephThePatrician/gemma3-270m-it-reviews-v3
+      --model JosephThePatrician/qwen3_0.6b-reviews-fine-tune-v3
       --max-model-len 4096
       --gpu-memory-utilization 0.5
     healthcheck:
