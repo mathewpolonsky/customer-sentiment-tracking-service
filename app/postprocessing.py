@@ -148,6 +148,33 @@ def identify_topic_by_subtopic(selected_topic, return_if_subtopic=True):
     return identified_subtopics
 
 
+def process_pairs(pairs, return_subtopics=True):
+    unique_topics = set()
+    new_pairs = []
+    for pair in pairs:
+        pair_topic = pair["topic"]
+        pair_sentiment = pair["sentiment"]
+        
+        if pair_topic in topics_to_replace:
+            pair_topic = topics_to_replace[pair_topic]
+            # if pair_topic not in unique_topics:
+            #     unique_topics.add(pair_topic)
+        
+        identified_topics = identify_topic_by_subtopic(pair_topic, return_subtopics)
+        
+        for identified_topic in identified_topics:
+            if identified_topic not in unique_topics:
+                unique_topics.add(identified_topic)
+                new_pairs.append(
+                    {
+                        "topic" : identified_topic,
+                        "sentiment" : pair_sentiment
+                    }
+                )
+    
+    return new_pairs
+
+
 def postprocess(topics_sentiments_full, return_subtopics=True):
     updated_topics_sentiments_full = []
 
@@ -161,29 +188,9 @@ def postprocess(topics_sentiments_full, return_subtopics=True):
             # "summarized_review" : review["summarized_review"]
         }
         pairs = review["topic_sentiment_pairs"]
-        unique_topics = set()
-        new_pairs = []
-        for pair in pairs:
-            pair_topic = pair["topic"]
-            pair_sentiment = pair["sentiment"]
-            
-            if pair_topic in topics_to_replace:
-                pair_topic = topics_to_replace[pair_topic]
-                # if pair_topic not in unique_topics:
-                #     unique_topics.add(pair_topic)
-            
-            identified_topics = identify_topic_by_subtopic(pair_topic, return_subtopics)
-            
-            for identified_topic in identified_topics:
-                if identified_topic not in unique_topics:
-                    unique_topics.add(identified_topic)
-                    new_pairs.append(
-                        {
-                            "topic" : identified_topic,
-                            "sentiment" : pair_sentiment
-                        }
-                    )
-
+        
+        new_pairs = process_pairs(pairs, return_subtopics)
+        
         new_review_sample["topic_sentiment_pairs"] = new_pairs
         updated_topics_sentiments_full.append(new_review_sample)
     

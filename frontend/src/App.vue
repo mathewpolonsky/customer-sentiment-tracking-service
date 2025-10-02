@@ -109,18 +109,18 @@
         
         <v-row density="compact">
           <v-col cols="12" lg="6">
-            <v-card title="Распределение по тональности (абс.)">
+            <v-card title="Распределение по тональности (абсолютное количество)">
               <v-card-text>
                 <v-row align="center" no-gutters>
                   <v-col v-for="sentiment in ['positive', 'neutral', 'negative']" :key="sentiment" class="d-flex flex-column align-center">
                     <div class="d-flex align-baseline">
                       <span :class="`text-h4 text-${sentiment}`">{{ kpiAbs[sentiment].value }}</span>
-                      <span class="ml-1 text-body-2 text-grey">шт.</span>
+                      <span class="ml-1 text-body-2 text-grey"> </span>
                     </div>
                     <!-- Логика отображения тренда -->
                     <v-chip :color="getTrendColor(sentiment, kpiAbs[sentiment].trend)" size="small" class="mt-2">
                       <v-icon v-if="kpiAbs[sentiment].trend !== 0" size="small" start :icon="kpiAbs[sentiment].trend > 0 ? 'mdi-arrow-up' : 'mdi-arrow-down'"></v-icon>
-                        {{ kpiAbs[sentiment].trend > 0 ? '+' : '' }}{{ kpiAbs[sentiment].trend }} шт. {{ trendPeriodText }}
+                        {{ kpiAbs[sentiment].trend > 0 ? '+' : '' }}{{ kpiAbs[sentiment].trend }} {{ trendPeriodText }}
                     </v-chip>
                   </v-col>
                 </v-row>
@@ -162,7 +162,7 @@
           </v-col>
         </v-row>
 
-        <v-row density="compact" class="mt-2">
+        <!-- <v-row density="compact" class="mt-2">
           <v-col cols="12">
             <v-card title="Ключевые аспекты">
               <v-data-table
@@ -175,8 +175,14 @@
               </v-data-table>
             </v-card>
           </v-col>
-        </v-row>
+        </v-row> -->
       </v-container>
+      <v-footer app class="d-flex justify-center text-caption">
+        <span class="mr-2">Источники отзывов:</span>
+        <a href="https://banki.ru" target="_blank" class="text-decoration-none text-primary">banki.ru</a>
+        <span class="mx-1">,</span>
+        <a href="https://sravni.ru" target="_blank" class="text-decoration-none text-primary">sravni.ru</a>
+      </v-footer>
     </v-main>
   </v-app>
 </template>

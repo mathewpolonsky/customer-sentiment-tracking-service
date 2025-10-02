@@ -1,7 +1,7 @@
 # customer-sentiment-tracking-service
 
 ## Запуск проекта
-В `docker-compose.yml` в сервисе `vllm` можно изменить параметр `gpu-memory-utilization` от 0.5 до 1.0 для оптимизации использования GPU.
+В `docker-compose.yml` в сервисе `vllm` можно изменить параметр `gpu-memory-utilization` для оптимизации использования GPU. Сейчас он установлен на 0.5.
 
 Для запуска проекта выполните команду:
 ```bash

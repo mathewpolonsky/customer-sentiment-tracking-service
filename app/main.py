@@ -3,6 +3,7 @@ import json
 from pydantic import BaseModel
 from typing import List
 from datetime import date, timedelta
+import traceback
 
 import asyncio
 import aiohttp
@@ -101,7 +102,7 @@ async def process_single_review(
                     "temperature": 0.5,
                     "max_tokens": 250,
                 }
-                # print("payload", payload)
+                print("payload", payload)
                 async with session.post(VLLM_URL, json=payload, timeout=180) as response: # Добавляем таймаут
                     if response.status == 200:
                         response_data = await response.json()
@@ -109,21 +110,28 @@ async def process_single_review(
                         content = response_data.get('choices', [{}])[0].get('message', {}).get('content', '')
                         # print("content", content)
                         try:
-
+                            content = content.replace("<think>\n\n</think>", "").strip()
                             parsed_response = json.loads(content.replace("'", "\"")) # Обучали на одинарных кавычках
                             # print("parsed_response", parsed_response)
                             if not validate_response_structure(parsed_response):
                                 continue # Невалидная структура, retry
 
+                            parsed_response = postprocessing.process_pairs(parsed_response, return_subtopics=False)
+                            # print("parsed_response2", parsed_response)
+
                             topics = [item["topic"] for item in parsed_response]
+                            # print("topics", topics)
                             sentiments = [SENTIMENT_MAP[item["sentiment"]] for item in parsed_response]
+                            # print("sentiments", sentiments)
                             return {"id": review_item.id, "topics": topics, "sentiments": sentiments}
 
                         except (json.JSONDecodeError, TypeError) as e:
                             # Модель вернула невалидный JSON, попробуем еще раз
                             print(f"Попытка {attempt + 1} провалена: Ошибка сети/таймаута - {e}")
+                            # print(traceback.format_exc())
                             pass
             except (asyncio.TimeoutError, aiohttp.ClientError) as e:
+                # print(traceback.format_exc())
                 # Таймаут запроса, попробуем еще раз
                 print(f"Попытка {attempt + 1} провалена: Ошибка сети/таймаута - {e}")
                 pass
@@ -432,3 +440,10 @@ async def get_products_list(db: Session = Depends(get_db)):
     """Эндпоинт для списка продуктов"""
     topics_query = db.query(models.Topic.name).distinct().order_by(models.Topic.name)
     return [t.name for t in topics_query.all()]
+
+@app.get("/api/sources_list")
+async def get_sources_list(db: Session = Depends(get_db)):
+    """Эндпоинт для списка источников отзывов."""
+    sources_query = db.query(models.Review.source).distinct().order_by(models.Review.source)
+    # Возвращаем только непустые значения
+    return [s.source for s in sources_query.all() if s.source]
