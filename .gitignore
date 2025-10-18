@@ -28,5 +28,11 @@ app/data/
 # Локальные данные PostgreSQL из docker-compose
 postgres_data/
 
+# Профиль Chrome и другие локальные данные
+chrome_profile/
+Отзывы о Газпромбанке — 4788 отзывов клиентов, решено 706 проблем_files/
+Отзывы о Газпромбанке — 4788 отзывов клиентов, решено 706 проблем.html
+chromedriver.exe
+
 # Логи
 *.log
