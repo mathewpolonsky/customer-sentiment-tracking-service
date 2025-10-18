@@ -16,6 +16,12 @@ import { createApp } from 'vue'
 // Styles
 import 'unfonts.css'
 
+import Plotly from 'plotly.js-dist-min';
+import locale from 'plotly.js-locales/ru'
+
+Plotly.register(locale)
+Plotly.setPlotConfig({locale: 'ru'})
+
 const app = createApp(App)
 
 registerPlugins(app)

@@ -74,7 +74,6 @@ services:
     # Пробрасываем кэш Hugging Face, чтобы не скачивать модель каждый раз
     volumes:
       - ~/.cache/huggingface:/root/.cache/huggingface
-    # Аналог --ipc=host
     ipc: host
 
     # Аргументы, которые передаются в контейнер при запуске

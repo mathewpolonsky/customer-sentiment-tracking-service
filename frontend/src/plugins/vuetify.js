@@ -32,9 +32,9 @@ const gpbLight = {
     // Цвета для тональностей
     positive: '#00875A',   // Насыщенный, но спокойный зеленый
     neutral: '#FFA500',    // Оранжевый для нейтральных
-    negative: '#DE350B',   // Мягкий, но понятный красный (лучше розового для данных)
+    negative: '#DE350B',   // Мягкий, но понятный красный
     
-    // Стандартные цвета Vuetify, которые тоже стоит задать
+    // Стандартные цвета Vuetify
     error: '#DE350B',
     info: '#72AEFE',
     success: '#00875A',
@@ -49,7 +49,7 @@ const gpbDark = {
     surface: '#1E1E1E',    // Чуть более светлые карточки
     primary: '#72AEFE',    // Голубой становится основным для акцентов
     secondary: '#2455D8',
-    // Цвета тональности можно оставить те же, они хорошо смотрятся на темном
+    // Цвета тональности те же
     positive: '#00875A',
     neutral: '#FFA500',
     negative: '#DE350B',
@@ -89,13 +89,11 @@ export default createVuetify({
       gpbDark,
     },
   },
-  // 3. УСТАНАВЛИВАЕМ ШРИФТ ПО УМОЛЧАНИЮ ДЛЯ ВСЕХ КОМПОНЕНТОВ
   defaults: {
     global: {
       style: 'font-family: "Inter", sans-serif;',
     },
     VCard: {
-      // elevation: 2, // Легкая тень для всех карточек
       elevation: 0,
       border: 'thin',
       class: 'rounded-lg' // Скругленные углы

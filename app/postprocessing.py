@@ -122,11 +122,7 @@ for topic in topics_subtopics:
     topics_subtopics_flatten.append(topic)
     topics_subtopics_flatten.extend(topics_subtopics[topic])
     
-    
-# topics_subtopics_flatten
 topics_subtopics_flatten_set = set(topics_subtopics_flatten)
-
-
 
 def identify_topic_by_subtopic(selected_topic, return_if_subtopic=True):
     selected_topic = selected_topic.strip()
@@ -157,8 +153,6 @@ def process_pairs(pairs, return_subtopics=True):
         
         if pair_topic in topics_to_replace:
             pair_topic = topics_to_replace[pair_topic]
-            # if pair_topic not in unique_topics:
-            #     unique_topics.add(pair_topic)
         
         identified_topics = identify_topic_by_subtopic(pair_topic, return_subtopics)
         
@@ -184,8 +178,6 @@ def postprocess(topics_sentiments_full, return_subtopics=True):
         
         new_review_sample = {
             "id" : review[id_name],
-            # "id" : review["reviewId"],
-            # "summarized_review" : review["summarized_review"]
         }
         pairs = review["topic_sentiment_pairs"]
         
@@ -195,3 +187,18 @@ def postprocess(topics_sentiments_full, return_subtopics=True):
         updated_topics_sentiments_full.append(new_review_sample)
     
     return updated_topics_sentiments_full
+
+
+# СОЗДАЕМ ОБРАТНОЕ ОТОБРАЖЕНИЕ (ПОДТЕМА -> [ТЕМЫ])
+subtopic_to_topics_map = {}
+for topic, subtopics in topics_subtopics.items():
+    # Каждая основная тема ссылается сама на себя
+    if topic not in subtopic_to_topics_map:
+        subtopic_to_topics_map[topic] = []
+    subtopic_to_topics_map[topic].append(topic)
+
+    # Каждая подтема ссылается на свою родительскую тему
+    for subtopic in subtopics:
+        if subtopic not in subtopic_to_topics_map:
+            subtopic_to_topics_map[subtopic] = []
+        subtopic_to_topics_map[subtopic].append(topic)

@@ -1,0 +1,22 @@
+# Игнорируем системные файлы Git
+.git
+.gitignore
+.gitattributes
+
+# Игнорируем специфичные для Python файлы
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Игнорируем папки с ноутбуками и парсерами
+notebooks/
+parsing/
+
+# Игнорируем файлы IDE
+.vscode/
+.idea/
+
+# Игнорируем локальные зависимости Python (если есть)
+venv/
+.env
